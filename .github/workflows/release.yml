@@ -21,6 +21,7 @@ jobs:
             background.js \
             content.js \
             share.html \
+            share.js \
             popup/ \
             icons/
 
