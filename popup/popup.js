@@ -91,7 +91,7 @@ function generateShareUrl(prompt) {
     v: prompt.visibility || 'public'
   };
   const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
-  return `https://promptvault.app/share#data=${encoded}`;
+  return `${chrome.runtime.getURL('share.html')}#data=${encoded}`;
 }
 
 // Render prompts
