@@ -1,5 +1,6 @@
 const DB_NAME = 'promptvault-db';
 const DB_VERSION = 1;
+const TRUSTED_SHARE_ORIGIN = 'https://abhisheksinghtomardev.github.io';
 
 function initDB() {
   return new Promise((resolve, reject) => {
@@ -64,6 +65,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.action === 'savePrompt') {
+    savePrompt(message.prompt)
+      .then((prompt) => sendResponse({ success: true, prompt }))
+      .catch((error) => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
+
+  return false;
+});
+
+chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+  if (sender.origin !== TRUSTED_SHARE_ORIGIN) {
+    sendResponse({ success: false, error: 'Untrusted share page.' });
+    return false;
+  }
+
+  if (message.action === 'importSharedPrompt') {
     savePrompt(message.prompt)
       .then((prompt) => sendResponse({ success: true, prompt }))
       .catch((error) => sendResponse({ success: false, error: error.message }));

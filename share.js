@@ -50,11 +50,14 @@ function generateId() {
 
 function parseShareUrl() {
   try {
-    const hashIndex = window.location.hash.indexOf('#data=');
-    if (hashIndex === -1) return null;
-    const encoded = window.location.hash.substring(hashIndex + 6);
+    const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const encoded = params.get('data');
+    if (!encoded) return null;
     const decoded = decodeURIComponent(atob(encoded));
-    return JSON.parse(decoded);
+    return {
+      prompt: JSON.parse(decoded),
+      extensionId: params.get('ext') || ''
+    };
   } catch (error) {
     return null;
   }
@@ -64,10 +67,29 @@ function isExtensionPage() {
   return window.location.protocol === 'chrome-extension:';
 }
 
-function showPublicPrompt(data) {
-  document.getElementById('prompt-title').textContent = data.t || 'Shared Prompt';
-  document.getElementById('prompt-content').textContent = data.c || '';
+function showPublicPrompt(share) {
+  document.getElementById('prompt-title').textContent = share.prompt.t || 'Shared Prompt';
+  document.getElementById('prompt-content').textContent = share.prompt.c || '';
+  document.getElementById('import-prompt-btn').disabled = !share.extensionId;
   showState('viewer');
+}
+
+function buildPrompt(data) {
+  const now = new Date().toISOString();
+  return {
+    id: generateId(),
+    userId: getUserId(),
+    title: data.t || 'Imported Prompt',
+    slug: (data.t || 'imported').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+    content: data.c || '',
+    description: data.d || '',
+    visibility: data.v || 'public',
+    isFavorite: false,
+    createdAt: now,
+    updatedAt: now,
+    tags: [],
+    importedFrom: 'shared'
+  };
 }
 
 async function savePrompt(prompt) {
@@ -93,40 +115,24 @@ async function savePrompt(prompt) {
 
 async function importPrompt() {
   showState('loading');
-  const data = parseShareUrl();
+  const share = parseShareUrl();
 
-  if (!data) {
+  if (!share) {
     showState('error', 'The shared link appears to be invalid.');
     return;
   }
-  if (!data.c) {
+  if (!share.prompt.c) {
     showState('error', 'This shared link does not contain prompt content.');
     return;
   }
 
   if (!isExtensionPage()) {
-    showPublicPrompt(data);
+    showPublicPrompt(share);
     return;
   }
 
   try {
-    const now = new Date().toISOString();
-    const prompt = {
-      id: generateId(),
-      userId: getUserId(),
-      title: data.t || 'Imported Prompt',
-      slug: (data.t || 'imported').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
-      content: data.c || '',
-      description: data.d || '',
-      visibility: data.v || 'public',
-      isFavorite: false,
-      createdAt: now,
-      updatedAt: now,
-      tags: [],
-      importedFrom: 'shared'
-    };
-
-    await withTimeout(savePrompt(prompt), IMPORT_TIMEOUT_MS);
+    await withTimeout(savePrompt(buildPrompt(share.prompt)), IMPORT_TIMEOUT_MS);
     showState('success');
     window.history.replaceState(null, '', window.location.pathname);
   } catch (error) {
@@ -150,6 +156,38 @@ document.getElementById('copy-prompt-btn').addEventListener('click', async () =>
   } catch (error) {
     button.textContent = 'Select and copy manually';
     setTimeout(() => { button.textContent = 'Copy Prompt'; }, 2200);
+  }
+});
+
+document.getElementById('import-prompt-btn').addEventListener('click', async () => {
+  const button = document.getElementById('import-prompt-btn');
+  const share = parseShareUrl();
+
+  if (!share?.extensionId) {
+    button.textContent = 'Extension not detected';
+    setTimeout(() => { button.textContent = 'Import to PromptVault'; }, 2200);
+    return;
+  }
+
+  try {
+    button.disabled = true;
+    button.textContent = 'Importing...';
+    const response = await chrome.runtime.sendMessage(share.extensionId, {
+      action: 'importSharedPrompt',
+      prompt: buildPrompt(share.prompt)
+    });
+
+    if (response?.success) {
+      showState('success');
+      return;
+    }
+
+    throw new Error(response?.error || 'PromptVault could not import this prompt.');
+  } catch (error) {
+    button.disabled = false;
+    button.textContent = 'Import failed';
+    document.getElementById('error-msg').textContent = 'Install or reload PromptVault, then try again. You can still copy the prompt.';
+    setTimeout(() => { button.textContent = 'Import to PromptVault'; }, 2200);
   }
 });
 

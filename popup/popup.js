@@ -92,7 +92,7 @@ function generateShareUrl(prompt) {
     v: prompt.visibility || 'public'
   };
   const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
-  return `${PUBLIC_SHARE_URL}#data=${encoded}`;
+  return `${PUBLIC_SHARE_URL}#data=${encoded}&ext=${chrome.runtime.id}`;
 }
 
 // Render prompts

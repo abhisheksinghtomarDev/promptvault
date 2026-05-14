@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "PromptVault",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Save and share your AI prompts locally - no account needed",
   "permissions": [
     "activeTab",
@@ -63,5 +63,8 @@
       "resources": ["share.html"],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "externally_connectable": {
+    "matches": ["https://abhisheksinghtomardev.github.io/*"]
+  }
 }
