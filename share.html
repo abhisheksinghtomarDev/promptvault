@@ -34,11 +34,39 @@
       color: white;
       padding: 12px 24px;
       border-radius: 8px;
+      border: 0;
       text-decoration: none;
       font-weight: 500;
+      cursor: pointer;
     }
     .btn:hover { background: #4338CA; }
+    .btn.secondary {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+    .btn.secondary:hover { background: #cbd5e1; }
     .hidden { display: none !important; }
+    .prompt-box {
+      text-align: left;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      max-height: 300px;
+      overflow: auto;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 14px;
+      margin: 0 0 20px;
+      color: #0f172a;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .button-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
     .spinner {
       border: 3px solid #f3f3f3;
       border-top: 3px solid #4F46E5;
@@ -62,6 +90,13 @@
       <h1 class="success">Prompt Imported!</h1>
       <p>The prompt has been saved to your local library.</p>
       <button type="button" class="btn close-btn">Close</button>
+    </div>
+    <div id="viewer" class="hidden">
+      <h1 id="prompt-title">Shared Prompt</h1>
+      <pre id="prompt-content" class="prompt-box"></pre>
+      <div class="button-row">
+        <button type="button" class="btn" id="copy-prompt-btn">Copy Prompt</button>
+      </div>
     </div>
     <div id="error" class="hidden">
       <h1 class="error">Import Failed</h1>

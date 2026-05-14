@@ -5,6 +5,7 @@ const IMPORT_TIMEOUT_MS = 5000;
 function showState(state, message = '') {
   document.getElementById('loading').classList.toggle('hidden', state !== 'loading');
   document.getElementById('success').classList.toggle('hidden', state !== 'success');
+  document.getElementById('viewer').classList.toggle('hidden', state !== 'viewer');
   document.getElementById('error').classList.toggle('hidden', state !== 'error');
 
   if (message) {
@@ -59,6 +60,16 @@ function parseShareUrl() {
   }
 }
 
+function isExtensionPage() {
+  return window.location.protocol === 'chrome-extension:';
+}
+
+function showPublicPrompt(data) {
+  document.getElementById('prompt-title').textContent = data.t || 'Shared Prompt';
+  document.getElementById('prompt-content').textContent = data.c || '';
+  showState('viewer');
+}
+
 async function savePrompt(prompt) {
   const db = await initDB();
   return new Promise((resolve, reject) => {
@@ -93,6 +104,11 @@ async function importPrompt() {
     return;
   }
 
+  if (!isExtensionPage()) {
+    showPublicPrompt(data);
+    return;
+  }
+
   try {
     const now = new Date().toISOString();
     const prompt = {
@@ -121,6 +137,20 @@ async function importPrompt() {
 
 document.querySelectorAll('.close-btn').forEach((button) => {
   button.addEventListener('click', () => window.close());
+});
+
+document.getElementById('copy-prompt-btn').addEventListener('click', async () => {
+  const button = document.getElementById('copy-prompt-btn');
+  const content = document.getElementById('prompt-content').textContent;
+
+  try {
+    await navigator.clipboard.writeText(content);
+    button.textContent = 'Copied!';
+    setTimeout(() => { button.textContent = 'Copy Prompt'; }, 1600);
+  } catch (error) {
+    button.textContent = 'Select and copy manually';
+    setTimeout(() => { button.textContent = 'Copy Prompt'; }, 2200);
+  }
 });
 
 importPrompt();

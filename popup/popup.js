@@ -1,5 +1,6 @@
 const DB_NAME = 'promptvault-db';
 const DB_VERSION = 1;
+const PUBLIC_SHARE_URL = 'https://abhisheksinghtomardev.github.io/promptvault/share.html';
 
 // IndexedDB helpers
 function initDB() {
@@ -91,7 +92,7 @@ function generateShareUrl(prompt) {
     v: prompt.visibility || 'public'
   };
   const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
-  return `${chrome.runtime.getURL('share.html')}#data=${encoded}`;
+  return `${PUBLIC_SHARE_URL}#data=${encoded}`;
 }
 
 // Render prompts
