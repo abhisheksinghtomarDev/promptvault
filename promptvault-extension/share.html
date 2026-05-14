@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Import Prompt - PromptVault</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .container {
+      background: white;
+      color: #333;
+      padding: 40px;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 { font-size: 24px; margin-bottom: 16px; color: #1e293b; }
+    p { font-size: 14px; color: #64748b; margin-bottom: 24px; }
+    .success { color: #10b981; font-weight: 500; }
+    .error { color: #dc2626; }
+    .btn {
+      display: inline-block;
+      background: #4F46E5;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .btn:hover { background: #4338CA; }
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #4F46E5;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="loading">
+      <div class="spinner"></div>
+      <h1>Importing Prompt...</h1>
+      <p>Please wait while we save this prompt to your library.</p>
+    </div>
+    <div id="success" class="hidden">
+      <h1 class="success">✓ Prompt Imported!</h1>
+      <p>The prompt has been saved to your local library.</p>
+      <a href="#" class="btn" onclick="window.close(); return false;">Close</a>
+    </div>
+    <div id="error" class="hidden">
+      <h1 class="error">Import Failed</h1>
+      <p id="error-msg">The shared link appears to be invalid.</p>
+      <a href="#" class="btn" onclick="window.close(); return false;">Close</a>
+    </div>
+  </div>
+
+  <script>
+    const DB_NAME = 'promptvault-db';
+    const DB_VERSION = 1;
+
+    function initDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result);
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains('prompts')) {
+            const store = db.createObjectStore('prompts', { keyPath: 'id' });
+            store.createIndex('userId', 'userId', { unique: false });
+          }
+        };
+      });
+    }
+
+    function getUserId() {
+      return localStorage.getItem('promptvault_user_id') || 'local-user';
+    }
+
+    function generateId() {
+      return 'pv-' + Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function parseShareUrl() {
+      try {
+        const hashIndex = window.location.hash.indexOf('#data=');
+        if (hashIndex === -1) return null;
+        const encoded = window.location.hash.substring(hashIndex + 6);
+        const decoded = decodeURIComponent(atob(encoded));
+        return JSON.parse(decoded);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function savePrompt(prompt) {
+      const db = await initDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('prompts', 'readwrite');
+        const store = tx.objectStore('prompts');
+        const request = store.put(prompt);
+        request.onsuccess = () => resolve(prompt);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function importPrompt() {
+      const data = parseShareUrl();
+
+      if (!data) {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('error').classList.remove('hidden');
+        return;
+      }
+
+      try {
+        const userId = getUserId();
+        const now = new Date().toISOString();
+
+        const prompt = {
+          id: generateId(),
+          userId: userId,
+          title: data.t || 'Imported Prompt',
+          slug: (data.t || 'imported').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+          content: data.c || '',
+          description: data.d || '',
+          visibility: data.v || 'public',
+          isFavorite: false,
+          createdAt: now,
+          updatedAt: now,
+          tags: [],
+          importedFrom: 'shared'
+        };
+
+        await savePrompt(prompt);
+
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('success').classList.remove('hidden');
+
+        // Clean URL
+        window.history.replaceState(null, '', window.location.pathname);
+      } catch (error) {
+        console.error('Import error:', error);
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('error').classList.remove('hidden');
+      }
+    }
+
+    // Run import
+    importPrompt();
+  </script>
+</body>
+</html>

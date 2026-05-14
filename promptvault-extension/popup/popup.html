@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PromptVault</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>PromptVault</h1>
+      <span class="tagline">Your Local Prompt Library</span>
+    </header>
+
+    <div class="actions">
+      <button id="save-btn" class="primary-btn">
+        <span class="icon">+</span>
+        Save Current Prompt
+      </button>
+      <p class="shortcut">Shortcut: Ctrl+Shift+S</p>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Search prompts...">
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="all">All</button>
+      <button class="tab-btn" data-tab="favorites">Favorites</button>
+    </div>
+
+    <div id="prompts-list" class="prompts-list">
+      <div class="loading">Loading prompts...</div>
+    </div>
+
+    <div class="empty-state hidden" id="empty-state">
+      <p>No prompts saved yet.</p>
+      <p class="sub">Press Ctrl+Shift+S on any AI site to save your first prompt.</p>
+    </div>
+
+    <footer>
+      <span class="storage-badge">📱 Stored locally</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
