@@ -1,7 +1,7 @@
 # PromptVault - Save and Share AI Prompts Locally
 
 <p align="center">
-  <img src="icons/icon128.png" alt="PromptVault" width="128" height="128">
+  <img src="icons/icon.svg" alt="PromptVault" width="128" height="128">
 </p>
 
 <p align="center">
@@ -38,27 +38,22 @@
 
 ## Installation
 
-### Option 1: Download & Install (Recommended for MVP)
+### Quick Install
 
-1. Download the latest release from the [Releases page](https://github.com/abhisheksinghtomarDev/promptvault/releases)
+1. Download the latest release from [Releases](https://github.com/abhisheksinghtomarDev/promptvault/releases)
 2. Extract the ZIP file
-3. Open Chrome and go to `chrome://extensions/`
-4. Enable **Developer mode** (toggle in top right)
+3. Open Chrome → `chrome://extensions/`
+4. Enable **Developer mode**
 5. Click **"Load unpacked"**
-6. Select the `promptvault-extension` folder
-7. Click the extension icon in your toolbar to start using!
+6. Select the extracted `promptvault` folder
 
-### Option 2: Clone & Install
+That's it! Press `Ctrl+Shift+S` on any AI site to save prompts.
+
+### Clone & Install
 
 ```bash
-# Clone the repository
 git clone https://github.com/abhisheksinghtomarDev/promptvault.git
-
-# Open Chrome extensions
-chrome://extensions/
-
-# Enable Developer mode, click "Load unpacked"
-# Select: promptvault/extension/promptvault-extension/
+# Then load the extension from the cloned promptvault folder
 ```
 
 ---
@@ -69,106 +64,58 @@ chrome://extensions/
 
 1. Go to ChatGPT, Claude, or any AI site
 2. Type your prompt in the text box
-3. Press `Ctrl+Shift+S` (or click the extension icon → "Save Current Prompt")
-4. Enter a title and click Save
-
-### Manage Your Prompts
-
-1. Click the PromptVault icon in your browser toolbar
-2. View all your saved prompts
-3. Use the search bar to filter
-4. Click tabs to switch between "All" and "Favorites"
+3. Press `Ctrl+Shift+S` (or click extension icon → "Save Current Prompt")
+4. Enter title and save
 
 ### Share a Prompt
 
-1. Click the PromptVault icon
-2. Find your prompt and click **"Share"**
-3. The share link is copied to your clipboard
-4. Send it to anyone!
+1. Click extension icon
+2. Click **"Share"** on any prompt
+3. Link is copied - send to anyone!
 
-### Import a Shared Prompt
+### Import Shared Prompt
 
-When someone shares a PromptVault link with you:
 1. Open the shared link
-2. The prompt is automatically imported to your library
-3. Done! No account needed.
+2. Prompt auto-imports to your library
 
 ---
 
 ## How Sharing Works
 
 ```
-┌─────────────────┐     ┌──────────────────┐
-│  Your Browser   │     │  Friend's        │
-│  (IndexedDB)     │────▶│  Browser         │
-│                 │ Link │  (IndexedDB)     │
-└─────────────────┘     └──────────────────┘
+┌─────────────┐     ┌─────────────┐
+│ Your Browser│────▶│ Friend's    │
+│  (Local DB)  │ Link│  (Local DB) │
+└─────────────┘     └─────────────┘
 ```
 
-Prompt data is encoded directly in the URL - no server, no database, no accounts.
-
----
-
-## For Shared Links to Work
-
-The `share.html` page needs to be hosted. This is already set up for GitHub Pages.
-
-1. Enable GitHub Pages in your repository settings
-2. Set source to `main` branch, `/docs` folder (or root)
-3. Shared links will work automatically!
+No server, no accounts - data lives in the URL!
 
 ---
 
 ## File Structure
 
 ```
-extension/
-└── promptvault-extension/
-    ├── manifest.json      # Chrome extension configuration
-    ├── background.js       # Core logic & IndexedDB storage
-    ├── content.js          # Captures prompts from AI sites
-    ├── share.html          # Import page for shared prompts
-    ├── popup/
-    │   ├── popup.html      # Extension popup interface
-    │   ├── popup.js        # Popup logic & IndexedDB queries
-    │   └── popup.css        # Popup styling
-    └── icons/              # Extension icons
+promptvault/
+├── manifest.json   # Extension config
+├── background.js  # Core logic (IndexedDB)
+├── content.js     # Captures prompts
+├── share.html     # Import page for shared links
+├── popup/         # UI components
+└── icons/         # Extension icons
 ```
 
 ---
 
 ## Privacy
 
-- 🔒 All data stored locally in your browser
-- 🔒 No data sent to any server
-- 🔒 No cookies, no tracking, no analytics
-- 🔒 No account required
-
----
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+- 🔒 100% local storage
+- 🔒 No server calls
+- 🔒 No tracking
+- 🔒 No account needed
 
 ---
 
 ## License
 
-MIT License - feel free to use, modify, and distribute.
-
----
-
-## Support
-
-If you find this useful, consider:
-
-- ⭐ Starring the repository
-- 🐛 Reporting issues
-- 💡 Suggesting features
-- 📢 Sharing with others
-
----
-
-<p align="center">
-  Made with ❤️ for AI users everywhere
-</p>
+MIT
