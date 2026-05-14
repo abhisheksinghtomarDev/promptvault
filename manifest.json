@@ -1,13 +1,14 @@
 {
   "manifest_version": 3,
   "name": "PromptVault",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Save and share your AI prompts locally - no account needed",
   "permissions": [
     "activeTab",
     "storage"
   ],
   "host_permissions": [
+    "https://chatgpt.com/*",
     "https://chat.openai.com/*",
     "https://claude.ai/*",
     "https://gemini.google.com/*",
@@ -28,6 +29,21 @@
     "service_worker": "background.js",
     "type": "module"
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*",
+        "https://www.perplexity.ai/*",
+        "https://*.anthropic.com/*",
+        "https://*.google.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
   "commands": {
     "save-prompt": {
       "suggested_key": {

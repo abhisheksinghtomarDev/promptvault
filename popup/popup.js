@@ -219,9 +219,30 @@ function filterPrompts() {
 
 // Event listeners
 document.getElementById('save-btn').addEventListener('click', async () => {
-  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-  if (tab?.id) {
-    await browser.tabs.sendMessage(tab.id, { action: 'capturePrompt' });
+  const saveBtn = document.getElementById('save-btn');
+  const originalText = saveBtn.innerHTML;
+
+  try {
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Opening save dialog...';
+    const response = await chrome.runtime.sendMessage({ action: 'captureFromActiveTab' });
+
+    if (!response?.success) {
+      saveBtn.textContent = response?.error || 'Could not find prompt';
+      setTimeout(() => {
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+      }, 2200);
+      return;
+    }
+
+    window.close();
+  } catch (error) {
+    saveBtn.textContent = 'Reload page and try again';
+    setTimeout(() => {
+      saveBtn.innerHTML = originalText;
+      saveBtn.disabled = false;
+    }, 2200);
   }
 });
 
@@ -233,16 +254,6 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.add('active');
     filterPrompts();
   });
-});
-
-// Keyboard shortcut listener
-browser.commands.onCommand.addListener(async (command) => {
-  if (command === 'save-prompt') {
-    const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-    if (tab?.id) {
-      await browser.tabs.sendMessage(tab.id, { action: 'capturePrompt' });
-    }
-  }
 });
 
 // Initial load
