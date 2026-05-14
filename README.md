@@ -40,7 +40,7 @@
 
 ### Option 1: Download & Install (Recommended for MVP)
 
-1. Download the latest release from the [Releases page](https://github.com/YOUR_USERNAME/promptvault/releases)
+1. Download the latest release from the [Releases page](https://github.com/abhisheksinghtomarDev/promptvault/releases)
 2. Extract the ZIP file
 3. Open Chrome and go to `chrome://extensions/`
 4. Enable **Developer mode** (toggle in top right)
@@ -52,7 +52,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/promptvault.git
+git clone https://github.com/abhisheksinghtomarDev/promptvault.git
 
 # Open Chrome extensions
 chrome://extensions/
