@@ -82,11 +82,9 @@ git clone https://github.com/abhisheksinghtomarDev/promptvault.git
 
 ## How Sharing Works
 
-```
-┌─────────────┐     ┌─────────────┐
-│ Your Browser│────▶│ Friend's    │
-│  (Local DB)  │ Link│  (Local DB) │
-└─────────────┘     └─────────────┘
+```mermaid
+flowchart LR
+    you["Your Browser<br/>Local DB"] -->|Share link| friend["Friend's Browser<br/>Local DB"]
 ```
 
 No server, no accounts - data lives in the URL!
