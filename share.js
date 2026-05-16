@@ -142,7 +142,11 @@ async function importPrompt() {
 }
 
 document.querySelectorAll('.close-btn').forEach((button) => {
-  button.addEventListener('click', () => window.close());
+  button.addEventListener('click', () => {
+    if (window.confirm('Close this tab?')) {
+      window.close();
+    }
+  });
 });
 
 document.getElementById('copy-prompt-btn').addEventListener('click', async () => {
