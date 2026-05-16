@@ -74,13 +74,13 @@ function showPublicPrompt(share) {
   showState('viewer');
 }
 
-function showCloseHelp() {
-  const existing = document.getElementById('close-help');
+function showDoneMessage(message) {
+  const existing = document.getElementById('done-help');
   existing?.remove();
 
   const help = document.createElement('p');
-  help.id = 'close-help';
-  help.textContent = 'Chrome cannot close tabs that were opened manually. Use Ctrl+W or close this tab from the browser.';
+  help.id = 'done-help';
+  help.textContent = message;
   help.style.margin = '16px 0 0';
   help.style.color = '#64748b';
   help.style.fontSize = '13px';
@@ -89,16 +89,13 @@ function showCloseHelp() {
   visiblePanel?.appendChild(help);
 }
 
-function confirmCloseTab() {
-  const shouldClose = window.confirm('Close this tab?');
-  if (!shouldClose) return;
-
+function handleDone() {
   if (window.opener || isExtensionPage()) {
     window.close();
     return;
   }
 
-  showCloseHelp();
+  showDoneMessage('Done. You can close this tab now.');
 }
 
 function buildPrompt(data) {
@@ -169,7 +166,11 @@ async function importPrompt() {
 }
 
 document.querySelectorAll('.close-btn').forEach((button) => {
-  button.addEventListener('click', confirmCloseTab);
+  if (!isExtensionPage()) {
+    button.textContent = 'Done';
+  }
+
+  button.addEventListener('click', handleDone);
 });
 
 document.getElementById('copy-prompt-btn').addEventListener('click', async () => {

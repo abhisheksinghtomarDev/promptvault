@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "PromptVault",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Save and share your AI prompts locally - no account needed",
   "permissions": [
     "activeTab",
