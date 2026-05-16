@@ -70,7 +70,11 @@ function isExtensionPage() {
 function showPublicPrompt(share) {
   document.getElementById('prompt-title').textContent = share.prompt.t || 'Shared Prompt';
   document.getElementById('prompt-content').textContent = share.prompt.c || '';
-  document.getElementById('import-prompt-btn').disabled = !share.extensionId;
+  const importButton = document.getElementById('import-prompt-btn');
+  const help = document.getElementById('import-help');
+  importButton.disabled = !share.extensionId;
+  help.classList.toggle('hidden', !!share.extensionId);
+  help.textContent = share.extensionId ? '' : 'Install or enable PromptVault to import. You can still copy the prompt.';
   showState('viewer');
 }
 
@@ -192,7 +196,10 @@ document.getElementById('import-prompt-btn').addEventListener('click', async () 
   const share = parseShareUrl();
 
   if (!share?.extensionId) {
-    button.textContent = 'Extension not detected';
+    const help = document.getElementById('import-help');
+    button.textContent = 'PromptVault not available';
+    help.textContent = 'Install or enable PromptVault to import. You can still copy the prompt.';
+    help.classList.remove('hidden');
     setTimeout(() => { button.textContent = 'Import to PromptVault'; }, 2200);
     return;
   }
@@ -213,8 +220,10 @@ document.getElementById('import-prompt-btn').addEventListener('click', async () 
     throw new Error(response?.error || 'PromptVault could not import this prompt.');
   } catch (error) {
     button.disabled = false;
-    button.textContent = 'Import failed';
-    document.getElementById('error-msg').textContent = 'Install or reload PromptVault, then try again. You can still copy the prompt.';
+    const help = document.getElementById('import-help');
+    button.textContent = 'PromptVault not available';
+    help.textContent = 'Install, enable, or reload PromptVault to import. You can still copy the prompt.';
+    help.classList.remove('hidden');
     setTimeout(() => { button.textContent = 'Import to PromptVault'; }, 2200);
   }
 });
